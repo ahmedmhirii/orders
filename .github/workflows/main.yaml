@@ -55,14 +55,14 @@ jobs:
           tags: ${{ github.sha }}
 
       # Build docker image for mock service
-      - name: Build mock docker image
-        uses: docker/build-push-action@v1
-        with:
-          push: false
-          path: test/json-server/
-          dockerfile: test/json-server/Dockerfile
-          repository: weaveworksdemos/json-server
-          tags: latest
+#      - name: Build mock docker image
+#        uses: docker/build-push-action@v1
+#        with:
+#          push: false
+#          path: test/json-server/
+#          dockerfile: test/json-server/Dockerfile
+#          repository: weaveworksdemos/json-server
+#          tags: latest
           
       # Run simple test against built container
 #      - name: Test docker image
