@@ -70,7 +70,6 @@ jobs:
           DOCKER_BUILDKIT: 1
         run: ./test/test.sh container.py --tag ${GITHUB_SHA}
 
-     
       # Push to dockerhub
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
