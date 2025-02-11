@@ -19,6 +19,10 @@ import works.weave.socks.orders.services.AsyncGetService;
 import works.weave.socks.orders.values.PaymentRequest;
 import works.weave.socks.orders.values.PaymentResponse;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
@@ -33,6 +37,9 @@ import java.util.regex.Pattern;
 @RepositoryRestController
 public class OrdersController {
     private final Logger LOG = LoggerFactory.getLogger(getClass());
+
+	  @Autowired
+    private Tracer tracer;
 
     @Autowired
     private OrdersConfigurationProperties config;
@@ -51,7 +58,9 @@ public class OrdersController {
     public
     @ResponseBody
     CustomerOrder newOrder(@RequestBody NewOrderResource item) {
-        try {
+			  Span span = tracer.spanBuilder("newOrder").startSpan();
+        
+        try (Scope scope = span.makeCurrent()) {
 
             if (item.address == null || item.customer == null || item.card == null || item.items == null) {
                 throw new InvalidOrderException("Invalid order request. Order requires customer, address, card and items.");
@@ -101,7 +110,6 @@ public class OrdersController {
             Future<Shipment> shipmentFuture = asyncGetService.postResource(config.getShippingUri(), new Shipment
                     (customerId), new ParameterizedTypeReference<Shipment>() {
             });
-
             CustomerOrder order = new CustomerOrder(
                     null,
                     customerId,
@@ -113,8 +121,10 @@ public class OrdersController {
                     Calendar.getInstance().getTime(),
                     amount);
             LOG.debug("Received data: " + order.toString());
+            span.addEvent("new CustomerOrder: " + order.toString());
 
             CustomerOrder savedOrder = customerOrderRepository.save(order);
+            span.addEvent("saved CustomerOrder: " + savedOrder);
             LOG.debug("Saved order: " + savedOrder);
 
             return savedOrder;
@@ -122,6 +132,8 @@ public class OrdersController {
             throw new IllegalStateException("Unable to create order due to timeout from one of the services.", e);
         } catch (InterruptedException | IOException | ExecutionException e) {
             throw new IllegalStateException("Unable to create order due to unspecified IO error.", e);
+        } finally {
+            span.end();
         }
     }
 

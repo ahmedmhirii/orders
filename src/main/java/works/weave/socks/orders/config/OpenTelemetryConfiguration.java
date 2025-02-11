@@ -1,0 +1,15 @@
+package works.weave.socks.orders.config;
+
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenTelemetryConfiguration {
+
+    @Bean
+    public Tracer tracer() {
+        return GlobalOpenTelemetry.getTracer("orders-service");
+    }
+}

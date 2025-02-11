@@ -63,6 +63,7 @@ public class CustomerOrder {
                 ", address=" + address +
                 ", card=" + card +
                 ", items=" + items +
+                ", total=" + total +
                 ", date=" + date +
                 '}';
     }
