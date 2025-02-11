@@ -16,7 +16,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GROUP: weaveworksdemos
+      GROUP: mhiriqim
       COMMIT: ${{ github.sha }}
       REPO: orders
     steps:
