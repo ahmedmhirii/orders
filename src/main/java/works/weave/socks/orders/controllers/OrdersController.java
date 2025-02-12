@@ -60,7 +60,9 @@ public class OrdersController {
     CustomerOrder newOrder(@RequestBody NewOrderResource item) {
 			  Span span = tracer.spanBuilder("newOrder").startSpan();
         
-        try (Scope scope = span.makeCurrent()) {
+        try
+                (Scope scope = span.makeCurrent())
+        {
 
             if (item.address == null || item.customer == null || item.card == null || item.items == null) {
                 throw new InvalidOrderException("Invalid order request. Order requires customer, address, card and items.");
@@ -120,11 +122,11 @@ public class OrdersController {
                     shipmentFuture.get(timeout, TimeUnit.SECONDS),
                     Calendar.getInstance().getTime(),
                     amount);
-            LOG.debug("Received data: " + order.toString());
-            span.addEvent("new CustomerOrder: " + order.toString());
+            span.setAttribute("order", order.toString());
+            span.setAttribute("total", order.getTotal());
 
             CustomerOrder savedOrder = customerOrderRepository.save(order);
-            span.addEvent("saved CustomerOrder: " + savedOrder);
+            span.setAttribute("savedOrder", savedOrder.toString());
             LOG.debug("Saved order: " + savedOrder);
 
             return savedOrder;

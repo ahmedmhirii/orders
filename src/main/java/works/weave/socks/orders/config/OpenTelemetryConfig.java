@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OpenTelemetryConfiguration {
+public class OpenTelemetryConfig {
 
     @Bean
     public Tracer tracer() {
-        return GlobalOpenTelemetry.getTracer("orders-service");
+        return GlobalOpenTelemetry.getTracer("orders-tracer");
     }
 }
